@@ -1,0 +1,16 @@
+# example profiles.yml file
+jaffle_shop:
+  target: dev
+  outputs:
+    dev:
+      type: spark
+      method: http
+      schema: "{{var('catalog')}}.jc_test"
+      host: localhost
+      
+      # optional
+      port: 10001
+      user: user
+      auth: NONE
+      kerberos_service_name: hive
+      

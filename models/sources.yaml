@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: test
+    schema: "{{var('catalog')}}.test"
+    tables:
+      - name: ranked_binary_file_input
+  - name: datalake
+    schema: parquet
+    tables:
+      - name: some_table
+        identifier: "path/to/storage1"
+        quoting:
+          identifier: true

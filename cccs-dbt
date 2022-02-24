@@ -1,0 +1,28 @@
+#!/opt/conda/bin/python3.8
+# -*- coding: utf-8 -*-
+import re
+import sys
+from dbt.main import main, parse_args
+
+# use dbt argument parser to determine what command we are executing
+args = sys.argv[1:]
+config = parse_args(args)
+
+# only create spark context when necessary
+# this is just a speed imporovement
+if config.which in ["run", "seed", "test", "debug", "build"]:
+    ##### create spark context #####
+    from models_pyspark.spark_context import *
+    ##### register pyspark UDF that extend SQL functions ######
+    from models_pyspark.udfs import register_udfs
+    register_udfs()
+    ##### register pyspark based views #####
+    import models_pyspark.views
+
+
+##### run dbt ######
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
+
+

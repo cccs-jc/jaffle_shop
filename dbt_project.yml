@@ -20,7 +20,10 @@ clean-targets:
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 
 models:
+  +pre-hook: "use {{var('catalog')}}"
   jaffle_shop:
       materialized: table
       staging:
-        materialized: view
+        materialized: ephemeral
+
+  
