@@ -1,3 +1,50 @@
+## This fork is a POC of using pyspark in dbt
+
+
+Currently the dbt-spark adapter only supports HTTP, ODBC and Thrift interfaces. This POC explores the possibility of using the pyspark context in the dbt-adapter.
+
+This has interesting benefits:
+- registering custom python UDF
+- creating custom views using the pyspark dataframe API
+
+We created a dbt commandline launcher which creates the pyspark context, registers UDF and creates custom views.
+
+For example ./models_pyspark/udfs.py registeres UDF like this
+```python
+def register_udfs():
+    spark = SparkSession._instantiatedSession
+    spark.udf.register("shingles", shingles_udf)
+
+```
+
+./models_pyspark/views/* create temporary views using dataframe
+```python
+spark = SparkSession._instantiatedSession
+
+df = spark.read.json("file:///tmp/manifest.json")
+
+df.createOrReplaceTempView("pyspark_json_dataset1")
+```
+
+dbt is then launched normaly. dbt models can leverage these UDFs and views. The resulting compiled SQL is executed by a forked dbt-spark https://github.com/cccs-jc/dbt-spark which uses pyspark to execute the SQL statements rather then submitting the statement to a remote thrift/HTML/ODBC service.
+
+dbt-spark/dbt/adapters/spark/connections.py
+```python
+spark = SparkSession._instantiatedSession
+result = spark.sql(sql)
+```
+
+The cccs-dbt launch script works exactly the same as the original dbt script. 
+```bash
+./cccs-dbt clean --vars '{"catalog": "<catalog name>"}' --profiles-dir .
+```
+
+The rest of the REAME is the original jaffle_shop documentation.
+
+---
+---
+---
+
 ## Testing dbt project: `jaffle_shop`
 
 `jaffle_shop` is a fictional ecommerce store. This dbt project transforms raw data from an app database into a customers and orders model ready for analytics.
