@@ -1,6 +1,21 @@
 ## This fork is a POC of using pyspark in dbt
 
 
+This example requires the latest iceberg 0.13 jar. You can replace it like this:
+
+```
+$ rm /usr/local/spark/jars/iceberg-spark3-runtime-0.12.1.jar 
+$ cp iceberg-spark-runtime-3.2_2.12-0.13.0.jar /usr/local/spark/jars/
+```
+
+The default docs serve requires local file access. To circumvent this we build our own index.html with inlised manifest.json.
+```
+# generate doc as usual
+./cccs-dbt docs generate --vars '{"catalog": "<catalog>"}' --profiles-dir .
+# serve with this script
+./cccs-serve-docs.py
+```
+
 Currently the dbt-spark adapter only supports HTTP, ODBC and Thrift interfaces. This POC explores the possibility of using the pyspark context in the dbt-adapter.
 
 This has interesting benefits:
