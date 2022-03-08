@@ -1,32 +1,13 @@
-
-
 {{ config(
     materialized='incremental',
     incremental_strategy='append',
 ) }}
 
 
-
-
-
-
-with customers as (
-
-    select * from {{ ref('stg_customers') }}
-
-),
-
-orders as (
-
-    select * from {{ ref('stg_orders') }}
-
-),
-
-payments as (
-
-    select * from {{ ref('stg_payments') }}
-
-),
+with 
+customers as (select * from {{ ref('stg_customers') }}),
+orders as (select * from {{ ref('stg_orders') }}),
+payments as (select * from {{ ref('stg_payments') }}),
 
 customer_orders as (
 
