@@ -2,17 +2,20 @@
 # -*- coding: utf-8 -*-
 import re
 import sys
+import json
 from dbt.main import main, parse_args
 
 # use dbt argument parser to determine what command we are executing
 args = sys.argv[1:]
 config = parse_args(args)
+catalog = json.loads(config.vars).get("catalog")
 
 # only create spark context when necessary
 # this is just a speed imporovement
 if config.which in ["run", "seed", "test", "debug", "build"]:
     ##### create spark context #####
-    from models_pyspark.spark_context import *
+    from models_pyspark.spark_context import create_spark_context
+    create_spark_context(catalog)
     ##### register pyspark UDF that extend SQL functions ######
     from models_pyspark.udfs import register_udfs
     register_udfs()
